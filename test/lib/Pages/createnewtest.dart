@@ -1,15 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:test/Pages/deepsquattest.dart';
+import 'package:test/Pages/fmstest.dart';
 
 
-/*The seven tests are:
-  deep squat
-  Hurdle Step'
-  inline Lunge
-  Shoulder Mobility
-  Acitive straight-leg raise
-  Trunk stability push up
-  rotary stability*/ 
-class CreateNewTest extends StatelessWidget{
+//State
+class CreateTest extends StatefulWidget {
+  const CreateTest({super.key});
+
+  @override
+  State<CreateTest> createState() => _CreateTestState();
+}
+
+class _CreateTestState extends State<CreateTest> {
+  
+  bool isExerciseSelected(bool exercise1, bool exercise2, bool exercise3, bool exercise4, bool exercise5, bool exercise6, bool exercise7, ){
+    bool isSelected = false;
+
+    if(exercise1 || exercise2 || exercise3 || exercise4 || exercise5 || exercise6|| exercise7){
+      isSelected = true;
+    }
+
+    return isSelected;
+  }
+
+  //Keeps trach of the state of each of the exercises being selected
   bool includeSquat = false;
   bool includeHurdle = false;
   bool includeLunge = false;
@@ -17,6 +31,8 @@ class CreateNewTest extends StatelessWidget{
   bool includeLegRaise = false;
   bool includePushUp = false;
   bool includeRotary = false;
+  bool exercisesSelected = false;
+
 
   @override
   Widget build(BuildContext context){
@@ -35,28 +51,46 @@ class CreateNewTest extends StatelessWidget{
         //Deep Squat container
         Container(
           decoration: BoxDecoration(
-            color: Colors.blue.shade100,
+            color: Colors.white,
             border: Border.all(
               color: Colors.black,
-              width: 2.0,
+              width: 1.0,
               style: BorderStyle.solid
             ),
-            borderRadius: BorderRadius.all(Radius.circular(10))
+            borderRadius: const BorderRadius.all(Radius.circular(10))
 
           ),
-          child: Row(children: [
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+            
+
             //Image
             Container(
               alignment: Alignment.centerLeft,
-              width: 160,
+              width: 100,
               height: 100,
-              child: Image.asset("assets/racist.png"),
+              child: Image.asset("assets/Deep Squat.png"),
             ),
 
             //Text
-            Text("Deep Squat",style: TextStyle(fontSize:20, color: Colors.black87),),
+            Container(
+              alignment: Alignment.center,
+              child: const Text("Deep Squat",style: TextStyle(fontSize:18, color: Colors.black87),),
+            ),
 
             //Switch
+            Container(
+              alignment: Alignment.centerRight,
+              child:Switch(
+                activeColor: Colors.blue.shade100,
+                value: includeSquat,
+                onChanged: (value){
+                  setState(() {
+                    includeSquat =!includeSquat;
+                  });
+                })
+            )
             
 
 
@@ -70,17 +104,43 @@ class CreateNewTest extends StatelessWidget{
           padding: EdgeInsets.all(8.0),
           
           decoration: BoxDecoration(
-            color: Colors.red.shade700,
+            color: Colors.white,
             border: Border.all(
               color: Colors.black,
-              width: 2.0,
+              width: 1.0,
               style: BorderStyle.solid
             ),
-            borderRadius: BorderRadius.all(Radius.circular(10))
+            borderRadius: const BorderRadius.all(Radius.circular(10))
 
           ),
-          child: Row(children: [
-            Text("Hurdle Squat", style: TextStyle(fontSize:20, color: Colors.black87),),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+
+            //Image
+            Container(
+              alignment: Alignment.centerLeft,
+              width: 100,
+              height: 100,
+              child: Image.asset("assets/Hurdle Step.png"),
+            ),
+
+            //Text
+            const Text("Hurdle Step", style: TextStyle(fontSize:18, color: Colors.black87),),
+
+            //Switch
+            Container(
+              alignment: Alignment.centerRight,
+              child:Switch(
+                activeColor: Colors.blue.shade100,
+                value: includeHurdle,
+                onChanged: (value){
+                  setState(() {
+                    includeHurdle =!includeHurdle;
+                  });
+                })
+            )
+
           ]),
         ),
 
@@ -90,17 +150,43 @@ class CreateNewTest extends StatelessWidget{
           padding: EdgeInsets.all(8.0),
           
           decoration: BoxDecoration(
-            color: Colors.blue.shade100,
+            color: Colors.white,
             border: Border.all(
               color: Colors.black,
-              width: 2.0,
+              width: 1.0,
               style: BorderStyle.solid
             ),
             borderRadius: BorderRadius.all(Radius.circular(10))
 
           ),
-          child: Row(children: [
-            Text("Inline Lunge", style: TextStyle(fontSize:20, color: Colors.black87),),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+
+            //Image
+            Container(
+              alignment: Alignment.centerLeft,
+              width: 100,
+              height: 100,
+              child: Image.asset("assets/Inline Lunge.png"),
+            ),
+
+            //Text
+            Text("Inline Lunge", style: TextStyle(fontSize:18, color: Colors.black87),),
+
+            //Switch
+            Container(
+              alignment: Alignment.centerRight,
+              child:Switch(
+                activeColor: Colors.blue.shade100,
+                value: includeLunge,
+                onChanged: (value){
+                  setState(() {
+                    includeLunge =!includeLunge;
+                  });
+                })
+            )
+
           ])
         ),
 
@@ -110,17 +196,45 @@ class CreateNewTest extends StatelessWidget{
           padding: EdgeInsets.all(8.0),
           
           decoration: BoxDecoration(
-            color: Colors.red.shade700,
+            color: Colors.white,
             border: Border.all(
               color: Colors.black,
-              width: 2.0,
+              width: 1.0,
               style: BorderStyle.solid
             ),
             borderRadius: BorderRadius.all(Radius.circular(10))
 
           ),
-          child: Row(children: [
-            Text("Shoulder Mobility", style: TextStyle(fontSize:20, color: Colors.black87),),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+
+            //Image
+            Container(
+              alignment: Alignment.centerLeft,
+              width: 100,
+              height: 100,
+              child: Image.asset("assets/Shoulder Mobility.png"),
+            ),
+
+            //Text
+            const Text("Shoulder Mobility", style: TextStyle(fontSize:18, color: Colors.black87),),
+
+            //Switch
+            Container(
+              alignment: Alignment.centerRight,
+              child:Switch(
+                activeColor: Colors.blue.shade100,
+                value: includeShoulder,
+                onChanged: (value){
+                  setState(() {
+                    includeShoulder =!includeShoulder;
+                  });
+                })
+            )
+
+            
+
           ]),
         ),
 
@@ -130,17 +244,44 @@ class CreateNewTest extends StatelessWidget{
           padding: EdgeInsets.all(8.0),
           
           decoration: BoxDecoration(
-            color: Colors.blue.shade100,
+            color: Colors.white,
             border: Border.all(
               color: Colors.black,
-              width: 2.0,
+              width: 1.0,
               style: BorderStyle.solid
             ),
             borderRadius: BorderRadius.all(Radius.circular(10))
 
           ),
-          child: Row(children: [
-            Text("Active Straight-leg raise", style: TextStyle(fontSize:20, color: Colors.black87),),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+
+            //Image
+            Container(
+              alignment: Alignment.centerLeft,
+              width: 100,
+              height: 100,
+              child: Image.asset("assets/Active Straight-Leg Raise.png"),
+            ),
+
+            //Text
+            const Text("Leg Raise", style: TextStyle(fontSize:18, color: Colors.black87),),
+
+            //Switch
+            Container(
+              alignment: Alignment.centerRight,
+              child:Switch(
+                activeColor: Colors.blue.shade100,
+                value: includeLegRaise,
+                onChanged: (value){
+                  setState(() {
+                    includeLegRaise =!includeLegRaise;
+                  });
+                })
+            )
+
+
           ])
         ),
 
@@ -150,17 +291,43 @@ class CreateNewTest extends StatelessWidget{
           padding: EdgeInsets.all(8.0),
           
           decoration: BoxDecoration(
-            color: Colors.red.shade700,
+            color: Colors.white,
             border: Border.all(
               color: Colors.black,
-              width: 2.0,
+              width: 1.0,
               style: BorderStyle.solid
             ),
-            borderRadius: BorderRadius.all(Radius.circular(10))
+            borderRadius: const BorderRadius.all(Radius.circular(10))
 
           ),
-          child: Row(children: [
-            Text("Push Up", style: TextStyle(fontSize:20, color: Colors.black87),),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+
+            //Image
+            Container(
+              alignment: Alignment.centerLeft,
+              width: 100,
+              height: 100,
+              child: Image.asset("assets/Trunk Stability Push Up.png"),
+            ),
+
+            //Text
+            const Text("Push Up", style: TextStyle(fontSize:18, color: Colors.black87),),
+
+            //Switch
+            Container(
+              alignment: Alignment.centerRight,
+              child:Switch(
+                activeColor: Colors.blue.shade100,
+                value: includePushUp,
+                onChanged: (value){
+                  setState(() {
+                    includePushUp =!includePushUp;
+                  });
+                })
+            )
+
           ]),
         ),
 
@@ -170,59 +337,73 @@ class CreateNewTest extends StatelessWidget{
           padding: EdgeInsets.all(8.0),
           
           decoration: BoxDecoration(
-            color: Colors.blue.shade100,
+            color: Colors.white,
             border: Border.all(
               color: Colors.black,
-              width: 2.0,
+              width: 1.0,
               style: BorderStyle.solid
             ),
-            borderRadius: BorderRadius.all(Radius.circular(10))
+            borderRadius: const BorderRadius.all(Radius.circular(10))
 
           ),
-          child: Row(children: [
-            Text("Rotary Stablility", style: TextStyle(fontSize:20, color: Colors.black87),),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+
+            //Image
+            Container(
+              alignment: Alignment.centerLeft,
+              width: 100,
+              height: 100,
+              child: Image.asset("assets/Rotary Stability.jpg"),
+            ),
+
+            //Text
+            const Text("Rotary Stablility", style: TextStyle(fontSize:18, color: Colors.black87),),
+
+            //Switch
+            Container(
+              alignment: Alignment.centerRight,
+              child:Switch(
+                activeColor: Colors.blue.shade100,
+                value: includeRotary,
+                onChanged: (value){
+                  setState(() {
+                    includeRotary =!includeRotary;
+                  });
+                })
+            )
+
           ])
         ),
 
+        Text("Deep Squat $includeSquat"),
+        Text("Hurdle Step $includeHurdle"),
+        Text("Inline Lunge $includeLunge"),
+        Text("Shoulder Mobility $includeShoulder"),
+        Text("Leg Raise $includeLegRaise"),
+        Text("Push Up $includePushUp"),
+        Text("Rotary Stability $includeRotary"),
 
+        ElevatedButton(
+          
+          onPressed: (){
+            Navigator.push(context, MaterialPageRoute(builder: (context) => FMSTest()));
+          },
+          
+          child: Text("Build new Test"),
+          )
         
       ],)
 
     );
   }
  
-}
+  
 
 
 
 
-
-
-//Switches
-class SquatSwitch extends StatefulWidget {
-  const SquatSwitch({super.key});
-
-  @override
-  State<SquatSwitch> createState() => _SquatSwitchState();
-}
-
-class _SquatSwitchState extends State<SquatSwitch> {
-  bool light = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Switch(
-      // This bool value toggles the switch.
-      value: light,
-      activeColor: Colors.red,
-      onChanged: (bool value) {
-        // This is called when the user toggles the switch.
-        setState(() {
-          light = value;
-        });
-      },
-    );
-  }
 }
 
 
