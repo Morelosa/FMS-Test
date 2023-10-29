@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 
+class PushUp extends StatefulWidget{
+  const PushUp({super.key});
 
-class DeepSquat extends StatefulWidget{
-  const DeepSquat({super.key});
-
+  
   @override
-  State<DeepSquat> createState() => _DeepSquatState();
-  
-  
+  State<PushUp> createState() => _PushUpState();
+
 }
 
-class _DeepSquatState extends State<DeepSquat>{
-
+class _PushUpState extends State<PushUp>{
   int dropdownValue = 0;
 
   @override
@@ -26,13 +24,13 @@ class _DeepSquatState extends State<DeepSquat>{
         //Title Text Container
         Container(
           alignment: Alignment.center,
-          child: const Text("Deep Squat", style: TextStyle(fontSize: 32,),),
+          child: const Text("Push Up", style: TextStyle(fontSize: 32,),),
         ),
 
         //Image of the exercise
         Container(
           alignment: Alignment.center,
-          child: Image.asset("assets/Deep Squat.png"),
+          child: Image.asset("assets/Trunk Stability Push Up.png"),
         ),
 
         //Start test button (Will have to make this button dynamically render upon each test completion)
@@ -117,7 +115,7 @@ class _DeepSquatState extends State<DeepSquat>{
               ),
 
               DropdownMenuItem<int>(
-                value: 4,
+                value: 9,
                 child: Text("9"),
               ),
 
@@ -133,7 +131,7 @@ class _DeepSquatState extends State<DeepSquat>{
         //About exercise
         Container(
           child:ElevatedButton(
-            child: Text("How to preform the Deep Squat"),
+            child: const Text("How to preform the Push Up"),
             onPressed: (){
               print("Work in progress. Please bare with me.");
             }
@@ -154,5 +152,6 @@ class _DeepSquatState extends State<DeepSquat>{
 
 
   }
+
 
 }

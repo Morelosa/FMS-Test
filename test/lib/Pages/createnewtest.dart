@@ -377,13 +377,13 @@ class _CreateTestState extends State<CreateTest> {
           ])
         ),
 
-        Text("Deep Squat $includeSquat"),
+        /*Text("Deep Squat $includeSquat"),
         Text("Hurdle Step $includeHurdle"),
         Text("Inline Lunge $includeLunge"),
         Text("Shoulder Mobility $includeShoulder"),
         Text("Leg Raise $includeLegRaise"),
         Text("Push Up $includePushUp"),
-        Text("Rotary Stability $includeRotary"),
+        Text("Rotary Stability $includeRotary"),*/
 
         ElevatedButton(
           
