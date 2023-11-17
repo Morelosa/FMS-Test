@@ -36,7 +36,7 @@ class _DeepSquatState extends State<DeepSquat>{
         ),
 
         //Start test button (Will have to make this button dynamically render upon each test completion)
-        Container(
+        /**Container(
           
           child: ElevatedButton(
             onPressed: () {
@@ -46,7 +46,70 @@ class _DeepSquatState extends State<DeepSquat>{
             child: const Text("Start Test"),
 
           ),
-        ),
+        ),*/
+
+        //New, dynamically self generating start test button, since we must incorperate multiple tests
+        Column(children: [
+
+          //Child that contains the dynamic portion of the widgit?
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+            
+            Container(
+            alignment: Alignment.center,
+            margin: const EdgeInsets.only(bottom: 10, top:5),
+            height: 30,
+            width: 280,
+            color: Colors.blue,
+            child: const Text(
+              "Hello",
+              style: TextStyle(color: Colors.white)
+            )
+
+            ),
+
+            GestureDetector(
+              child: const Icon(Icons.remove),
+              onTap: () {
+
+              
+            }
+
+            ),
+          ],)
+         
+        ],),
+
+        //Child that contains the create new and delete tests
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          
+          children: [
+          ElevatedButton.icon(
+            icon: const Icon(Icons.add),
+            label: const Text("Create"),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+            ),
+            onPressed: (){
+
+            }
+          ),
+
+          ElevatedButton.icon(
+            icon: const Icon(Icons.clear),
+            label: const Text("Clear"),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.redAccent,
+            ),
+            onPressed: (){
+              
+            }
+          )
+
+        ],),
+
 
         //Rate pain of exercise switch
         Container(
