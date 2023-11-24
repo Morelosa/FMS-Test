@@ -37,12 +37,12 @@ class _FMSTestState extends State<FMSTest>{
       body: PageView(children: const [
 
         DeepSquat(),
-        HurdleStep(),
-        InlineLunge(),
-        ShoulderMobility(),
-        LegRaise(),
-        PushUp(),
-        RotaryStability()
+        //HurdleStep(),
+        //InlineLunge(),
+        //ShoulderMobility(),
+        //LegRaise(),
+        //PushUp(),
+        //RotaryStability()
         
 
         

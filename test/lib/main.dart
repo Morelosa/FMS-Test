@@ -18,6 +18,7 @@ class Transition extends StatelessWidget{
 
 //Home page
 class Home extends StatelessWidget{
+
   @override
   Widget build(BuildContext context){
     return Scaffold(
