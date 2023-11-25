@@ -1,5 +1,8 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:dynamic_widget/dynamic_widget.dart';
+import 'package:test/main.dart';
+import 'package:tflite_v2/tflite_v2.dart';
+
 
 
 
@@ -14,101 +17,40 @@ class DeepSquat extends StatefulWidget{
 
 class _DeepSquatState extends State<DeepSquat>{
 
-  //List to store dynamic text field widgets
-  List<DynamicWidget> listDynamic = [];
+  CameraImage? cameraImage;
+  CameraController? cameraController;
+  String output = "";
 
-  //List to store data
-  List<String> data = [];
+  loadCamera(){
+    cameraController = CameraController(cameras![0], ResolutionPreset.medium);
+    cameraController!.initialize().then((value){
+      if(!mounted){
+        return;
+      }
+      else{
+        setState(() {
+          cameraController!.startImageStream((imageStream){
+            cameraImage = imageStream;
 
-  //Ion fo floating action button
-  Icon floatingIcon = new Icon(Icons.add);
-
-  //function to add dynamic text field widgets to list
-  addDynamic(){
-
-    //If data is alredy present, cleaer it before adding more text fields
-    if (data.length != 0){
-      floatingIcon = new Icon (Icons.add);
-      data = [];
-      listDynamic = [];
-    }
-
-    //Limit number of text fields to 5
-    if(listDynamic.length >=5){
-      return;
-    }
-
-    //Add new dynamic text field widget to list
-    listDynamic.add(new DynamicWidget());
-    setState(() {});
+          });
+        });
+      }
+    });
   }
 
-  //Function to retrieve ndata from text fields and display in a list
-  submitData(){
-    floatingIcon = new Icon(Icons.arrow_back);
-    data = [];
-    listDynamic.forEach((widget) => data.add(widget.controller.text));
-    setState(() {});
-    print(data.length);
-  }
 
+
+  loadmodel()async{
+    await Tflite.loadModel(model: "assets/model.tflite", labels:"assets/labels.txt");
+  }
   
-
-
 
   int dropdownValue = 0;
 
   @override
   Widget build(BuildContext context) {
-
     //Widget to display list of entered data
-    Widget result = Flexible(
-      flex: 1,
-      child: Card(
-        child: ListView.builder(
-          itemCount: data.length,
-          itemBuilder: (_, index){
-            return Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Container(
-                    margin: const EdgeInsets.only(left: 10.0),
-                    child: Text("${index+1} : ${data[index]}}"),
-                  ),
-                  Divider(),
-                ],)
-            );
-          }
-        )
-      )
-
-    );
-
-    //Widget to Display dynamic text field widgets
-    Widget dynamicTextField = Flexible(
-      flex: 2,
-      child: ListView.builder(
-        itemCount: listDynamic.length,
-        itemBuilder: (_, index) => listDynamic[index],
-
-      )
-    );
-
-    //Widget for submitting data
-    Widget submitButton =  Container(
-      child: ElevatedButton(
-        onPressed: submitData,
-        child: const Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Text("Submit Data")
-        )
-      )
-
-    );
     
-
     return Scaffold(
       //Page Styling
       backgroundColor: Colors.blue.shade100,
@@ -127,6 +69,8 @@ class _DeepSquatState extends State<DeepSquat>{
           alignment: Alignment.center,
           child: Image.asset("assets/Deep Squat.png"),
         ),
+
+      
 
         //Start test button (Will have to make this button dynamically render upon each test completion)
         /*Container(
@@ -316,18 +260,3 @@ class _DeepSquatState extends State<DeepSquat>{
 }
 
 
-//Widet for dnamic text field
-class DynamicWidget extends StatelessWidget{
-  TextEditingController controller = TextEditingController();
-
-  @override
-  Widget build(BuildContext context){
-    return Container(
-      margin: const EdgeInsets.all(8.0),
-      child: TextField(
-        controller: controller,
-        decoration: const InputDecoration(hintText: 'Enter Data'),
-      )
-    );
-  }
-}

@@ -1,8 +1,18 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:test/Pages/testdynamic.dart';
 import 'Pages/createnewtest.dart';
 
+List<CameraDescription> ? cameras; 
 
-void main() => runApp(Transition());
+//void main() => runApp(Transition());
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  cameras = await availableCameras();
+  runApp(Transition());
+}
+
 
 
 //New guide that showed how to make a navagation tree
