@@ -5,75 +5,79 @@ import numpy as np
 
 app = Flask(__name__)
 
+@app.route('/')
+def welcome_page():
+    return "Welcome to FMS Test API! Send a video file to the /process_video endpoint for processing."
 
 mp_pose = mp.solutions.pose
 pose = mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5)
 mp_drawing = mp.solutions.drawing_utils
 
-def process_frame(frame):
-    
-    wrist_distance_dict = {}
+def process_video(video_path):
+
+    cap = cv2.VideoCapture(video_path)
     min_wrist_distance = 100
-    
-    try:
-        # Color conversion for MediaPipe Pose model
-        image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        image.flags.writeable = False
 
-        # Make detection using MediaPipe Pose model
-        results = pose.process(image)
+    while cap.isOpened():
+        ret, frame = cap.read()
+        if not ret:
+            break
 
-        image.flags.writeable = True
-        image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-
-        # Extract landmarks and calculate wrist distance
         try:
-            landmarks = results.pose_landmarks.landmark
+            # Color conversion for MediaPipe Pose model
+            image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            image.flags.writeable = False
 
-            # Get coordinates
-            l_wrist = [landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].x, landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].y]
-            r_wrist = [landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].x, landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].y]
+            # Make detection using MediaPipe Pose model
+            results = pose.process(image)
 
-            # Calculate Distance Between Landmarks
-            wrist_distance = np.linalg.norm(np.array(l_wrist) - np.array(r_wrist))
+            image.flags.writeable = True
+            image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
-            # Take Minimum Distance Between Wrists
-            if wrist_distance < min_wrist_distance:
-                min_wrist_distance = wrist_distance
+            # Extract landmarks and calculate wrist distance
+            try:
+                landmarks = results.pose_landmarks.landmark
 
-            wrist_distance_dict['min_wrist_distance'] = min_wrist_distance
+                # Get coordinates
+                l_wrist = [landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].x, landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].y]
+                r_wrist = [landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].x, landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].y]
 
-            # Draw the distance text on the frame
-            cv2.putText(image, f"Wrist Distance: {wrist_distance:.2f} units",
-                        tuple(np.multiply(l_wrist, [640, 480]).astype(int)),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
+                # Calculate Distance Between Landmarks
+                wrist_distance = np.linalg.norm(np.array(l_wrist) - np.array(r_wrist))
+
+                # Take Minimum Distance Between Wrists
+                if wrist_distance < min_wrist_distance:
+                    min_wrist_distance = wrist_distance
+
+                # Draw the distance text on the frame
+                cv2.putText(image, f"Wrist Distance: {wrist_distance:.2f} units",
+                            tuple(np.multiply(l_wrist, [640, 480]).astype(int)),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
+
+            except Exception as e:
+                print(f"Error processing landmarks: {e}")
+
+            # Render detections
+            mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,
+                                      mp_drawing.DrawingSpec(color=(245, 117, 66), thickness=2, circle_radius=2),
+                                      mp_drawing.DrawingSpec(color=(245, 66, 230), thickness=2, circle_radius=2))
 
         except Exception as e:
-            print(f"Error processing landmarks: {e}")
+            print(f"Error processing frame: {e}")
 
-        # Render detections
-        mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,
-                                  mp_drawing.DrawingSpec(color=(245, 117, 66), thickness=2, circle_radius=2),
-                                  mp_drawing.DrawingSpec(color=(245, 66, 230), thickness=2, circle_radius=2))
+    cap.release()
+    return min_wrist_distance
 
-        # Calculate wrist distance (assuming the function is already defined)
-        return image, min_wrist_distance
-
-    except Exception as e:
-        print(f"Error processing frame: {e}")
-        return None, None
-    
-
-@app.route('/process_frame', methods=['POST'])
-def process_frame_endpoint():
+@app.route('/process_video', methods=['POST'])
+def process_video_endpoint():
     try:
-        # Receive frame from Flutter app
-        frame_data = request.files['frame'].read()
-        nparr = np.frombuffer(frame_data, np.uint8)
-        frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        # Receive video from Flutter app
+        video_data = request.files['video'].read()
+        with open('uploaded_video.mp4', 'wb') as video_file:
+            video_file.write(video_data)
 
-        # Process the frame
-        result = process_frame(frame)
+        # Process the video
+        result = process_video('uploaded_video.mp4')
 
         # Return the result as JSON
         return jsonify({'result': result})
