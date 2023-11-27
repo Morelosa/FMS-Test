@@ -1,15 +1,22 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:test/Pages/testdynamic.dart';
 import 'Pages/createnewtest.dart';
 
 List<CameraDescription> ? cameras; 
 
 //void main() => runApp(Transition());
 
-Future<void> main() async {
+
+main()async{
   WidgetsFlutterBinding.ensureInitialized();
-  cameras = await availableCameras();
+  try{
+    cameras = await availableCameras();
+
+  } on CameraException catch (e){
+
+    print(e);
+
+  }
   runApp(Transition());
 }
 

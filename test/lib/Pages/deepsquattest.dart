@@ -1,10 +1,5 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:test/main.dart';
-import 'package:tflite_v2/tflite_v2.dart';
-
-
-
 
 class DeepSquat extends StatefulWidget{
   const DeepSquat({super.key});
@@ -16,34 +11,6 @@ class DeepSquat extends StatefulWidget{
 }
 
 class _DeepSquatState extends State<DeepSquat>{
-
-  CameraImage? cameraImage;
-  CameraController? cameraController;
-  String output = "";
-
-  loadCamera(){
-    cameraController = CameraController(cameras![0], ResolutionPreset.medium);
-    cameraController!.initialize().then((value){
-      if(!mounted){
-        return;
-      }
-      else{
-        setState(() {
-          cameraController!.startImageStream((imageStream){
-            cameraImage = imageStream;
-
-          });
-        });
-      }
-    });
-  }
-
-
-
-  loadmodel()async{
-    await Tflite.loadModel(model: "assets/model.tflite", labels:"assets/labels.txt");
-  }
-  
 
   int dropdownValue = 0;
 
@@ -70,83 +37,8 @@ class _DeepSquatState extends State<DeepSquat>{
           child: Image.asset("assets/Deep Squat.png"),
         ),
 
-      
-
-        //Start test button (Will have to make this button dynamically render upon each test completion)
-        /*Container(
-          
-          child: ElevatedButton(
-            onPressed: () {
-              print("Matthews portion goes here.");
-            },
-
-            child: const Text("Start Test"),
-
-          ),
-        ),*/
-
-        //New, dynamically self generating start test button, since we must incorperate multiple tests
-        /*Column(children: [
-
-          //Child that contains the dynamic portion of the widgit?
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-            
-            Container(
-            alignment: Alignment.center,
-            margin: const EdgeInsets.only(bottom: 10, top:5),
-            height: 30,
-            width: 280,
-            color: Colors.blue,
-            child: const Text(
-              "Hello",
-              style: TextStyle(color: Colors.white)
-            )
-
-            ),
-
-            GestureDetector(
-              child: const Icon(Icons.remove),
-              onTap: () {
-
-              
-            }
-
-            ),
-          ],)
-         
-        ],),*/
-
-        //Child that contains the create new and delete tests
-        /*Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          
-          children: [
-          ElevatedButton.icon(
-            icon: const Icon(Icons.add),
-            label: const Text("Create"),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue,
-            ),
-            onPressed: (){
-
-            }
-          ),
-
-          ElevatedButton.icon(
-            icon: const Icon(Icons.clear),
-            label: const Text("Clear"),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.redAccent,
-            ),
-            onPressed: (){
-              
-            }
-          )
-
-        ],),*/
-
+        //Starting exercise goes here
+        
 
 
 
