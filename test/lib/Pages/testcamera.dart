@@ -32,6 +32,8 @@ class _CameraAppState extends State<CameraApp> {
   late CameraController controller;
   String message = "";
 
+
+  
   @override
   void initState() {
     super.initState();
@@ -75,8 +77,7 @@ class _CameraAppState extends State<CameraApp> {
       File sentFile = File(_universalFile!.path);
       uploadVideo(sentFile);
 
-
-      //Navigator.push(context, MaterialPageRoute(builder: (context) => Confirmation() ));
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const Confirmation() ));
 
     }
 
@@ -84,10 +85,7 @@ class _CameraAppState extends State<CameraApp> {
   }
 
   Future<void> uploadVideo(File file) async{
-    if(file == null){
-      return;
-    }
-
+    
     try{
       print("Started video upload!");
       var request = http.MultipartRequest(
@@ -141,7 +139,7 @@ class _CameraAppState extends State<CameraApp> {
             getVideoFile(ImageSource.camera);
             
           },
-        child: Text("Open Camera"),
+        child: const Text("Open Camera"),
           
         )
       )
@@ -163,12 +161,8 @@ class Confirmation extends StatelessWidget{
       
       body: Container(
         alignment: Alignment.center,
-        child: Column(children: [
-          const Text("File Uploaded Sucessfully!"),
-
-          Container(
-            child: Image.file(File(_universalFile!.path)),
-          )
+        child: const Column(children: [
+          Text("File Uploaded Sucessfully!"),
           
         ],)
       )
