@@ -68,6 +68,8 @@ def process_video(video_path):
     cap.release()
     return min_wrist_distance
 
+
+
 @app.route('/process_video', methods=['POST'])
 def process_video_endpoint():
     try:
