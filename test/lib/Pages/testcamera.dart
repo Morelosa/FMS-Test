@@ -7,13 +7,13 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 
 
-late List<CameraDescription> _cameras;
+late List<CameraDescription> cameras;
 XFile? _universalFile;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  _cameras = await availableCameras();
+  cameras = await availableCameras();
   runApp(const MaterialApp(home:CameraApp()));
 }
 
@@ -29,16 +29,17 @@ class CameraApp extends StatefulWidget {
 
 
 class _CameraAppState extends State<CameraApp> {
-  late CameraController controller;
-  String message = "";
+  CameraImage? cameraImage;
+  CameraController? controller;
+  String output = "";
 
 
   
   @override
   void initState() {
     super.initState();
-    controller = CameraController(_cameras[0], ResolutionPreset.max);
-    controller.initialize().then((_) {
+    controller = CameraController(cameras[0], ResolutionPreset.max);
+    controller?.initialize().then((_) {
       if (!mounted) {
         return;
       }
@@ -59,7 +60,7 @@ class _CameraAppState extends State<CameraApp> {
 
   @override
   void dispose() {
-    controller.dispose();
+    controller!.dispose();
     super.dispose();
   }
 
@@ -67,7 +68,7 @@ class _CameraAppState extends State<CameraApp> {
     //XFile? videoImage;
 
 
-    //videoImage= await ImagePicker.pickVideo(source: sourceImage);
+    /*//videoImage= await ImagePicker.pickVideo(source: sourceImage);
     final returnedVideo = await ImagePicker().pickVideo(source: ImageSource.camera);
 
     if(returnedVideo != null){
@@ -79,9 +80,37 @@ class _CameraAppState extends State<CameraApp> {
 
       Navigator.push(context, MaterialPageRoute(builder: (context) => const Confirmation() ));
 
+    }*/
+
+    //Implementation of live feed goes here
+    // Stop the current image stream (if any)
+    //controller?.stopImageStream();
+
+    // Initialize the camera controller and start the image stream
+    controller = CameraController(cameras[0], ResolutionPreset.medium);
+    controller!.initialize().then((_) {
+    if (!mounted) {
+      return;
     }
 
-
+    // Start the image stream
+    controller!.startImageStream((imageStream) {
+      setState(() {
+        cameraImage = imageStream;
+      });
+    });
+    }).catchError((Object e) {
+    if (e is CameraException) {
+      switch (e.code) {
+        case 'CameraAccessDenied':
+          // Handle access errors here.
+          break;
+        default:
+          // Handle other errors here.
+          break;
+      }
+      }
+    });
   }
 
   Future<void> uploadVideo(File file) async{
@@ -108,7 +137,7 @@ class _CameraAppState extends State<CameraApp> {
       //Random youtuber told me to put this part down
       http.Response res = await http.Response.fromStream(response);
       final resJson = jsonDecode(res.body);
-      message = resJson['message'];
+      output = resJson['message'];
       setState(() {});
 
       if(response.statusCode == 200){
@@ -128,7 +157,7 @@ class _CameraAppState extends State<CameraApp> {
 
   @override 
   Widget build(BuildContext context){
-    if(!controller.value.isInitialized){
+    if(!controller!.value.isInitialized){
       return Container();
     }
     return Scaffold(
@@ -152,8 +181,11 @@ class _CameraAppState extends State<CameraApp> {
 }
 
 
+
 class Confirmation extends StatelessWidget{
   const Confirmation({super.key});
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -168,6 +200,158 @@ class Confirmation extends StatelessWidget{
       )
     );
     
+  }
+}
+
+class LiveCamera extends StatefulWidget{
+  @override
+  State<LiveCamera> createState() => _LiveCameraState();
+
+}
+
+class _LiveCameraState extends State<LiveCamera>{
+
+
+  CameraImage? cameraImage;
+  CameraController? controller;
+  String output = "";
+
+
+  
+  @override
+  void initState() {
+    super.initState();
+    controller = CameraController(cameras[0], ResolutionPreset.max);
+    controller?.initialize().then((_) {
+      if (!mounted) {
+        return;
+      }
+      setState(() {});
+    }).catchError((Object e) {
+      if (e is CameraException) {
+        switch (e.code) {
+          case 'CameraAccessDenied':
+            // Handle access errors here.
+            break;
+          default:
+            // Handle other errors here.
+            break;
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    controller!.dispose();
+    super.dispose();
+  }
+
+  Future getVideoFile(ImageSource sourceImage) async{
+    //XFile? videoImage;
+
+
+    /*//videoImage= await ImagePicker.pickVideo(source: sourceImage);
+    final returnedVideo = await ImagePicker().pickVideo(source: ImageSource.camera);
+
+    if(returnedVideo != null){
+
+      _universalFile = returnedVideo;
+
+      File sentFile = File(_universalFile!.path);
+      uploadVideo(sentFile);
+
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const Confirmation() ));
+
+    }*/
+
+    //Implementation of live feed goes here
+    // Stop the current image stream (if any)
+    //controller?.stopImageStream();
+
+    // Initialize the camera controller and start the image stream
+    controller = CameraController(cameras[0], ResolutionPreset.medium);
+    controller!.initialize().then((_) {
+    if (!mounted) {
+      return;
+    }
+
+    // Start the image stream
+    controller!.startImageStream((imageStream) {
+      setState(() {
+        cameraImage = imageStream;
+      });
+    });
+    }).catchError((Object e) {
+    if (e is CameraException) {
+      switch (e.code) {
+        case 'CameraAccessDenied':
+          // Handle access errors here.
+          break;
+        default:
+          // Handle other errors here.
+          break;
+      }
+      }
+    });
+  }
+
+  Future<void> uploadVideo(File file) async{
+    
+    try{
+      print("Started video upload!");
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse('http://192.168.1.187:8080/process_video')
+      );
+
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'video',
+          file.path,
+          contentType: MediaType('video','mp4'),
+        )
+      );
+
+      print("Sending now");
+      var response = await request.send();
+      print("Sent");
+
+      //Random youtuber told me to put this part down
+      http.Response res = await http.Response.fromStream(response);
+      final resJson = jsonDecode(res.body);
+      output = resJson['message'];
+      setState(() {});
+
+      if(response.statusCode == 200){
+        print("Video uploaded sucessfully!");
+      }
+      else{
+        print("Failed to upload video. Status Code: ${response.statusCode}");
+      }
+      
+    }
+    catch(e){
+      print("Error uploading video: $e");
+    }
+
+
+  }
+
+
+
+
+  @override
+  Widget build(BuildContext context){
+    return Scaffold(
+      body: getVideoFile(),
+    )
+  }
+  
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    throw UnimplementedError();
   }
 }
 
