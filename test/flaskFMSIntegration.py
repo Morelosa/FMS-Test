@@ -76,17 +76,12 @@ def process_video(video_data):
 @app.route('/process_video', methods=['POST'])
 def process_video_endpoint():
     try:
-        # Receive video from Flutter app
-        video_data = request.files['video'].read()
+       video_data = request.files['video'].read()
         with open('uploaded_video.mp4', 'wb') as video_file:
             video_file.write(video_data)
 
-
-        # Process the video
-        result = process_video('uploaded_video.mp4')
-
         # Convert result to string
-        result_str = str(result)
+        result_str = str('uploaded_video.mp4')
 
         # Results sent back from API
         print(f"Result of video processing: {result_str}")
@@ -100,6 +95,7 @@ def process_video_endpoint():
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8080)
+
 
 
 
