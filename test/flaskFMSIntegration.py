@@ -13,10 +13,13 @@ mp_pose = mp.solutions.pose
 pose = mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5)
 mp_drawing = mp.solutions.drawing_utils
 
-def process_video(video_path):
+min_wrist_distance = 100
 
-    cap = cv2.VideoCapture(video_path)
-    min_wrist_distance = 100
+def process_video(video_data):
+
+    global min_wrist_distance
+
+    cap = cv2.VideoCapture(video_data)
 
     while cap.isOpened():
         ret, frame = cap.read()
@@ -78,14 +81,26 @@ def process_video_endpoint():
         with open('uploaded_video.mp4', 'wb') as video_file:
             video_file.write(video_data)
 
+
         # Process the video
         result = process_video('uploaded_video.mp4')
 
+        # Convert result to string
+        result_str = str(result)
+
+        # Results sent back from API
+        print(f"Result of video processing: {result_str}")
+
         # Return the result as JSON
-        return jsonify({'result': result})
+        return jsonify({'result': result_str})
 
     except Exception as e:
         return jsonify({'error': str(e)})
 
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8080)
+
+
+
+

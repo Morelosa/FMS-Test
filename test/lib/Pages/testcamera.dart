@@ -1,3 +1,5 @@
+
+/*
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -6,156 +8,330 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
+import 'package:image_picker/image_picker.dart';
 
-List<CameraDescription>? cameras;
+late List<CameraDescription> _cameras;
+XFile? _universalFile;
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  cameras = await availableCameras();
-  runApp(const MaterialApp(home:HomePage()));
+  _cameras = await availableCameras();
+  runApp(const MaterialApp(home:CameraApp()));
 }
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+/// CameraApp is the Main Application.
+class CameraApp extends StatefulWidget {
+  /// Default Constructor
+  const CameraApp({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<CameraApp> createState() => _CameraAppState();
 }
 
-class _HomePageState extends State<HomePage> {
+
+
+class _CameraAppState extends State<CameraApp> {
+  late CameraController controller;
+  String message = "";
+
+
+  
+  @override
+  void initState() {
+    super.initState();
+    controller = CameraController(_cameras[0], ResolutionPreset.max);
+    controller.initialize().then((_) {
+      if (!mounted) {
+        return;
+      }
+      setState(() {});
+    }).catchError((Object e) {
+      if (e is CameraException) {
+        switch (e.code) {
+          case 'CameraAccessDenied':
+            // Handle access errors here.
+            break;
+          default:
+            // Handle other errors here.
+            break;
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  Future getVideoFile(ImageSource sourceImage) async{
+    //XFile? videoImage;
+
+
+    //videoImage= await ImagePicker.pickVideo(source: sourceImage);
+    final returnedVideo = await ImagePicker().pickVideo(source: ImageSource.camera);
+
+    if(returnedVideo != null){
+
+      _universalFile = returnedVideo;
+
+      File sentFile = File(_universalFile!.path);
+      uploadVideo(sentFile);
+
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const Confirmation() ));
+
+    }
+
+
+  }
+
+  Future<void> uploadVideo(File file) async {
+    try {
+      print("Started video upload!");
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse('http://192.168.1.187:8080/process_video'),
+      );
+
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'video',
+          file.path,
+          contentType: MediaType('video', 'mp4'),
+        ),
+      );
+
+      print("Sending now");
+      var response = await request.send();
+      print("Sent");
+
+      http.Response res = await http.Response.fromStream(response);
+
+      if (res.body != null) {
+        final resJson = jsonDecode(res.body);
+
+        if (resJson['result'] is double) {
+          // Convert double to string
+          message = resJson['result'].toString();
+        } else {
+          // Use as is
+          message = resJson['result'] ?? 'No result received';
+        }
+
+        print('Message: $message');
+        setState(() {});
+      } else {
+        print('Empty response body');
+      }
+
+
+
+    } catch (e) {
+      print("Error uploading video: $e");
+    }
+    
+
+  }
+
+  @override 
+  Widget build(BuildContext context){
+    if(!controller.value.isInitialized){
+      return Container();
+    }
+    return Scaffold(
+      body: Container(
+        alignment: Alignment.center,
+        child: ElevatedButton(
+          onPressed:() {
+            getVideoFile(ImageSource.camera);
+            
+          },
+        child: const Text("Open Camera"),
+          
+        )
+      )
+
+    );
+
+  }
+
+
+}
+
+
+class Confirmation extends StatelessWidget{
+  const Confirmation({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Home Page")),
-      body: SafeArea(
-        child: Center(
-            child: ElevatedButton(
-          onPressed: () async {
-            await availableCameras().then((value) => Navigator.push(context,
-                MaterialPageRoute(builder: (_) => CameraPage(cameras: value))));
+      
+      body: Container(
+        alignment: Alignment.center,
+        child: const Column(children: [
+          Text("File Uploaded Sucessfully!"),
+          
+        ],)
+      )
+    );
+    
+  }
+}
+*/
+
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:camera/camera.dart';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
+import 'package:image/image.dart' as img;
+import 'package:image_picker/image_picker.dart';
+
+late List<CameraDescription> _cameras;
+XFile? _universalFile;
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  _cameras = await availableCameras();
+  runApp(const MaterialApp(home: CameraApp()));
+}
+
+class CameraApp extends StatefulWidget {
+  const CameraApp({Key? key}) : super(key: key);
+
+  @override
+  _CameraAppState createState() => _CameraAppState();
+}
+
+class _CameraAppState extends State<CameraApp> {
+  late CameraController controller;
+  String message = "";
+
+  @override
+  void initState() {
+    super.initState();
+    controller = CameraController(_cameras[0], ResolutionPreset.max);
+    controller.initialize().then((_) {
+      if (!mounted) {
+        return;
+      }
+      setState(() {});
+    }).catchError((Object e) {
+      if (e is CameraException) {
+        switch (e.code) {
+          case 'CameraAccessDenied':
+            // Handle access errors here.
+            break;
+          default:
+            // Handle other errors here.
+            break;
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  Future getVideoFile(ImageSource sourceImage) async {
+    final returnedVideo = await ImagePicker().pickVideo(source: ImageSource.camera);
+
+    if (returnedVideo != null) {
+      _universalFile = returnedVideo;
+      File sentFile = File(_universalFile!.path);
+      uploadVideo(sentFile);
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const Confirmation()));
+    }
+  }
+
+  Future<void> uploadVideo(File file) async {
+
+    try {
+      print("Started video upload!");
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse('http://192.168.1.187:8080/process_video'),
+      );
+
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'video',
+          file.path,
+          contentType: MediaType('video', 'mp4'),
+        ),
+      );
+
+      print("Sending now");
+      var response = await request.send();
+      print("Sent");
+
+      http.Response res = await http.Response.fromStream(response);
+
+      if (res.body != null) {
+        final resJson = jsonDecode(res.body);
+        message = resJson['result'] ?? 'No result received';
+        print('Message: $message');
+        setState(() {});
+      } else {
+        print('Empty response body');
+      }
+      // Delete the video file after processing
+      if (file.existsSync()) {
+        file.delete();
+        print('Video file deleted.');
+      } else {
+        print('Video file not found.');
+      }
+
+    } catch (e) {
+      print("Error uploading video: $e");
+    }
+
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!controller.value.isInitialized) {
+      return Container();
+    }
+
+    return Scaffold(
+      body: Container(
+        alignment: Alignment.center,
+        child: ElevatedButton(
+          onPressed: () {
+            getVideoFile(ImageSource.camera);
           },
-          child: const Text("Take a Picture"),
-        )),
+          child: const Text("Open Camera"),
+        ),
       ),
     );
   }
 }
 
-class CameraPage extends StatefulWidget{
-  final List<CameraDescription>? cameras;
-  const CameraPage(
-    {Key? key, required this.cameras}): super(key:key);
-
-  @override
-  State<CameraPage> createState() => _CaperaPageState();
-  
-}
-
-class _CaperaPageState extends State<CameraPage>{
-  late CameraController _cameraController;
-
-  //********************************************** */
-
-  Future<String> sendFrameToAPI(Uint8List frameBytes) async {
-    // Replace 'YOUR_API_ENDPOINT' with the actual endpoint of your Flask API
-    final apiUrl = Uri.parse('http://127.0.0.1:8080/process_video');
-
-    try {
-      // Send the video frame to the API
-      final response = await http.post(
-        apiUrl,
-        body: frameBytes,
-        headers: {'Content-Type': 'application/octet-stream'},
-      );
-
-      // Handle the API response
-      if (response.statusCode == 200) {
-        // Parse the JSON response
-        final Map<String, dynamic> responseData = json.decode(response.body);
-        final double result = responseData['result'];
-        return 'Success: $result';
-      } else {
-        return 'Error: ${response.statusCode}';
-      }
-    } catch (e) {
-      print('Error sending frame to API: $e');
-      return 'Error: $e';
-    }
-  }
-
-  void startStreaming() {
-    // Periodically capture and send frames
-    Timer.periodic(const Duration(milliseconds: 100), (timer) async {
-      if (_cameraController.value.isInitialized) {
-        // Retrieve a frame from the camera
-        final XFile image = await _cameraController.takePicture();
-
-        if (image != null) {
-          // Read the image file as bytes
-          final File file = File(image.path);
-          final Uint8List bytes = await file.readAsBytes();
-
-          // Send the frame to the Flask API
-          final apiResponse = await sendFrameToAPI(bytes);
-
-          // Handle the API response
-          print(apiResponse);
-          // You can update the UI or perform other actions based on the API response
-        }
-      }
-    });
-  }
-  //*************************************** */
-
-  Future initCamera(CameraDescription cameraDescription) async{
-    _cameraController =  CameraController(cameraDescription, ResolutionPreset.high);
-
-    try{
-      await _cameraController.initialize().then((_){
-        if(!mounted) return;
-        setState((){});
-
-      });
-    } on CameraException catch (e){
-      debugPrint("camera error $e");
-    }
-
-  }
-
-  @override
-  void initState() {
-  super.initState();
-  // initialize the rear camera
-  initCamera(widget.cameras![0]);
-  startStreaming();
-  } 
-
-@override
-void dispose() {
-  // Dispose of the controller when the widget is disposed.
-  _cameraController.dispose();
-  super.dispose();
-  }
+class Confirmation extends StatelessWidget {
+  const Confirmation({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: SafeArea(
-          child: _cameraController.value.isInitialized? CameraPreview(_cameraController): const Center(child:CircularProgressIndicator())
+      body: Container(
+        alignment: Alignment.center,
+        child: const Column(
+          children: [
+            Text("File Uploaded Successfully!"),
+          ],
         ),
-
-        //New chatGPT code
-        floatingActionButton: FloatingActionButton(
-          onPressed:(){
-            _cameraController.dispose();
-            Navigator.pop(context);
-          }
-        ),
+      ),
     );
-    
-
   }
 }
- 
-
-
